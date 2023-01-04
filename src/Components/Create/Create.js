@@ -1,49 +1,75 @@
-import React, { Fragment } from 'react';
+import React, { Fragment ,useState, useContext} from 'react';
 import './Create.css';
 import Header from '../Header/Header';
+import { AuthContext, FirebaseContext } from '../../store/Context';
+import { useHistory } from 'react-router-dom';
 
 const Create = () => {
-  return (
+
+  const {firebase} = useContext(FirebaseContext);
+  const {user} = useContext(AuthContext);
+  const history = useHistory();
+
+  const [proName,setProName] = useState('');
+  const [proCat,setProCat] = useState('');
+  const [proPrice,setProPrice] = useState('');
+  const [proImage,setProImage] = useState(null);
+  const date = new Date()
+  const handleSubmit = ()=>{
+     firebase.storage().ref(`/image/${proImage.name}`).put(proImage).then(({ref})=>{
+      ref.getDownloadURL().then((url)=>{
+        firebase.firestore().collection('products').add({
+          proName,
+          proCat,
+          proPrice,
+          url,
+          userId:user.uid,
+          createdAt:date.toDateString()
+        })
+        history.push('/')
+      })
+     })
+  }
+
+  return (  
     <Fragment>
       <Header />
-      <card>
         <div className="centerDiv">
-          <form>
-            <label htmlFor="fname">Name</label>
+            <label htmlFor="productName">Product Name</label>
             <br />
             <input
               className="input"
               type="text"
-              id="fname"
-              name="Name"
-              defaultValue="John"
+              id="productName"
+              name="productName"
+              value={proName}
+              onChange={(e) => setProName(e.target.value)}
             />
             <br />
-            <label htmlFor="fname">Category</label>
+            <label htmlFor="category">Category</label>
             <br />
             <input
               className="input"
               type="text"
-              id="fname"
+              id="category" 
               name="category"
-              defaultValue="John"
+              value={proCat}
+              onChange={(e) => setProCat(e.target.value)}
             />
             <br />
-            <label htmlFor="fname">Price</label>
+            <label htmlFor="price">Price</label>
             <br />
-            <input className="input" type="number" id="fname" name="Price" />
+            <input className="input" type="number" id="price" name="Price" value={proPrice} onChange={(e) => setProPrice(e.target.value)}/>
             <br />
-          </form>
+          
           <br />
-          <img alt="Posts" width="200px" height="200px" src=""></img>
-          <form>
+          <img alt="Posts" width="200px" height="200px" src={ proImage ? URL.createObjectURL(proImage) :""}></img>
             <br />
-            <input type="file" />
+            <input type="file" accept="image/png, image/gif, image/jpeg" onChange={(e)=>setProImage(e.target.files[0])} />
             <br />
-            <button className="uploadBtn">upload and Submit</button>
-          </form>
+            <button className="uploadBtn" onClick={handleSubmit}>upload and Submit</button>
+          
         </div>
-      </card>
     </Fragment>
   );
 };
