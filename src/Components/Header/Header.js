@@ -17,7 +17,7 @@ function Header() {
   return (
     <div className="headerParentDiv">
       <div className="headerChildDiv">
-        <div className="brandName">
+        <div className="brandName" onClick={()=>history.push('/')}>
           <OlxLogo></OlxLogo>
         </div>
         <div className="placeSearch">
@@ -51,14 +51,16 @@ function Header() {
          }} >Logout</span> }
         </div>
 
-        <div className="sellMenu">
+        {user &&
+         <div className="sellMenu">
         
-          <SellButton></SellButton>
-          <div className="sellMenuContent">
-            <SellButtonPlus></SellButtonPlus>
-            <span onClick={()=>history.push('/sellProduct')}>SELL</span>
-          </div>
-        </div>
+         <SellButton></SellButton>
+         <div className="sellMenuContent">
+           <SellButtonPlus></SellButtonPlus>
+           <span onClick={()=>history.push('/sellProduct')}>SELL</span>
+         </div>
+       </div>
+        }
       </div>
     </div>
   );

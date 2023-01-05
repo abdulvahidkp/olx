@@ -14,9 +14,6 @@ function Login() {
     e.preventDefault();
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
-        
-        var user = userCredential.user;
-        console.log('logged in')
         history.push('/')
       })
       .catch((error) => {
